@@ -1,5 +1,5 @@
 Meteor.startup(function() {
-  if (Meteor.users.find().count() === 0) {
+  if (Meteor.isServer && Meteor.users.find().count() === 0) {
     Meteor.call('pull_users', function(error, members) {
       if(members) {
         members.forEach(function (member, index) {

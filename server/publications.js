@@ -1,6 +1,10 @@
-Meteor.publish("attendances", function () {
-  if(Meteor.user() && Meteor.user().profile.isAdmin)
-    return Attendances.find();
+Meteor.publish("checkIns", function () {
+  if(this.userId && Meteor.users.findOne(this.userId).profile.isAdmin)
+    return CheckIns.find();
   else
-    return Attendances.find({userId: Meteor.user()._id});
+    return CheckIns.find({userId: this.userId});
 });
+
+Meteor.publish("messages", function() {
+  return Messages.find();
+})
