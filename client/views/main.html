@@ -7,4 +7,61 @@
 </head>
 
 <body>
+  
 </body>
+
+<template name="main">
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="jumbotron">
+        <div class="container">
+          <h1>Hello, <strong>{{username}}</strong> </h1>
+          <p>What a lovely {{day}}!</p>
+        </div>
+      </div>
+    </div>
+    <div class="panle" style="text-align:center">
+       <i class="fa fa-slack fa-fw fa-2x" style="vertical-align:middle"></i><a href="https://eptikar.slack.com/messages/time/" target="_blank"><small>EIT Slack #time (checkin/checkout)</small></a>
+
+       <i class="fa fa-github fa-fw fa-2x" style="vertical-align:middle"></i><a href="https://github.com/Eptikar-IT-Solutions/slack-time-tracker" target="_blank"><small>This project on Github (bugs/features)</small></a>
+    </div>
+    <hr>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">CheckIn</h3>
+          </div>
+          <div class="panel-body">
+             <i class="fa fa-arrow-circle-down fa-5x pull-left fa-border"></i> <h1 style="text-align:center"><strong>{{checkInTime}}</strong> AM</h1>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-sm-6">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+            <h3 class="panel-title">CheckOut</h3>
+          </div>
+          <div class="panel-body">
+             <i class="fa fa-arrow-circle-up fa-5x pull-left fa-border"></i> <h1 style="text-align:center"><strong>{{checkOutTime}}</strong> PM</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--   <div class="row">
+    <div class="col-lg-12">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">Team</h3>
+        </div>
+        
+      </div>
+    </div>
+  </div> -->
+</template>
