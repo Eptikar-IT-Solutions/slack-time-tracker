@@ -58,8 +58,8 @@ Meteor.methods({
     return Days.update(
       { userId: userId, date: checkIn.getDate() },
       {
-        $addToSet: { "sprints.checkIn": checkIn },
-        $setOnInsert: { userId: userId, date: checkIn.getDate() }
+        $addToSet: { sprints: { checkIn: checkIn } },
+        $setOnInsert: { userId: userId, date: checkIn.getDate(), $push: {sprints: { checkIn: checkIn }} }
       },
       { upsert: true }
     ); 
@@ -67,11 +67,10 @@ Meteor.methods({
 
   addCheckOut: function(userId, checkOut) {
     return Days.update(
-      { userId: userId, date: checkOut.getDate(), "sprints.$.checkIn": { $exists: true}, "sprints.$.checkOut": { $exists: false} },
-      {
-        $push: { "sprints.checkOut": checkOut }
-      }
-    );    
+      { userId: userId, date: checkOut.getDate() , sprints: 
+        { $elemMatch: {checkIn: { $exists: true}, checkOut: { $exists: false} } } 
+      },
+      { $set: { 'sprints.$.checkOut': checkOut } });    
   }
 });
 
@@ -87,12 +86,12 @@ Meteor.startup(function() {
 
           if (message.text.trim() === '0') {
             console.log('DEBUGGING CHECKOUT', userId, time);
-            Meteor.call('addCheckIn', userId, time);
+            Meteor.call('addCheckOut', userId, time);
           }
 
           if (message.text.trim() === '1') {
             console.log('DEBUGGING CHECKIN', userId, time);
-            Meteor.call('addCheckOut', userId, time);
+            Meteor.call('addCheckIn', userId, time);
           }
         }
       });
