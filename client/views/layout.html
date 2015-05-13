@@ -1,31 +1,16 @@
 <template name="layout">
-  <nav class="navbar navbar-default" role="navigation">
-    <!-- Brand and toggle get grouped for better mobile display -->
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" href="#">
-        <img src="/img/eit.svg" style="height:35px; margin-top: -7px"> 
-      </a>
-    </div>
-  
-    <!-- Collect the nav links, forms, and other content for toggling -->
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
-      <ul class="nav navbar-nav navbar-right">
-        {{> loginButtons}}
-      </ul>
-    </div><!-- /.navbar-collapse -->
+  <head>
+    <link rel="stylesheet" type="text/css" href="/css/app.css">
+    <script type="text/javascript" src="/js/Chart.min.js"></script>
 
-    <div class="navbar navbar-fixed-bottom footer">
-      All rights are reserved ©2015 Eptikar IT Solutions Inc.
+    <title>EIT Time Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  </head>
+
+  <body>
+    {{> nav}}
+    <div class="container">
+      {{> yield}}
     </div>
-  </nav>
-  <div class="container">
-    {{> yield}}
-    {{> main}}
-  </div>
+  </body>
 </template>

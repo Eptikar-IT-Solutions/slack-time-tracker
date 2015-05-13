@@ -41,7 +41,7 @@ daySchema = new SimpleSchema({
   },
 
   date: {
-    type: String
+    type: Date
   },
 
   sprints: {
@@ -52,29 +52,30 @@ daySchema = new SimpleSchema({
 
 Days.attachSchema(daySchema);
 
+
 // Methods //
 Meteor.methods({
-  addCheckIn: function(userId, checkIn) {
-    date = '' + checkIn.getFullYear() + checkIn.getMonth() + checkIn.getDate();
+  addCheckIn: function(userId, checkInTimeStamp) {
+    var checkIn = new Date(checkInTimeStamp * 1000);
     return Days.update(
       { 
         userId: userId, 
-        date: date 
+        date: { $gte: startOfCurrentDay(checkIn), $lt: startOfNextDay(checkIn) } 
       },
       {
         $addToSet: { sprints: { checkIn: checkIn } },
-        $setOnInsert: { userId: userId, date: date, $push: {sprints: { checkIn: checkIn }} }
+        $setOnInsert: { userId: userId, date: startOfCurrentDay(checkIn), $push: {sprints: { checkIn: checkIn }} }
       },
       { upsert: true }
     ); 
   },
 
-  addCheckOut: function(userId, checkOut) {
-    date = '' + checkOut.getFullYear() + checkOut.getMonth() + checkOut.getDate();
+  addCheckOut: function(userId, checkOutTimeStamp) {
+    var checkOut = new Date(checkOutTimeStamp * 1000);
     return Days.update(
       { 
         userId: userId, 
-        date: date, 
+        date: { $gte: startOfCurrentDay(checkOut), $lt: startOfNextDay(checkOut) }, 
         sprints: { $elemMatch: { checkIn: { $exists: true}, checkOut: { $exists: false} } } 
       },
       { 
@@ -83,6 +84,32 @@ Meteor.methods({
     );    
   }
 });
+
+// Helpers //
+
+Days.lastCheckIn = function() {
+  return Days.findOne(
+    { 
+      userId: Meteor.userId(),
+      date: { $gte: startOfCurrentDay(new Date), $lt: startOfNextDay(new Date) } 
+    }, 
+    { 
+      sort: { 'sprints.checkIn': -1 }
+    }
+  ).sprints[0].checkIn;
+}
+
+Days.lastCheckOut = function() {
+  return Days.findOne(
+    { 
+      userId: Meteor.userId(),
+      date: { $gte: startOfCurrentDay(new Date), $lt: startOfNextDay(new Date) } 
+    }, 
+    { 
+      sort: { 'sprints.checkOut': -1 }
+    }
+  ).sprints[0].checkOut;
+}
 
 // Seed //
 Meteor.startup(function() {
@@ -93,23 +120,22 @@ Meteor.startup(function() {
       messages.forEach(function(message, index) {
         if(!message.hasOwnProperty('subtype')) {
           var userId = Meteor.users.findOne({'profile.slackId': message.user})._id;
-          var time = new Date(message.ts * 1000);
 
           if (message.text.trim() === '1') {
-            console.log('DEBUGGING CHECKIN', userId, time);
-            Meteor.call('addCheckIn', userId, time);
+            console.log('CHECKIN#' , index,': ', userId);
+            Meteor.call('addCheckIn', userId, message.ts);
           }
         }
       });
+
       // CHECKOUT
       messages.forEach(function(message, index) {
         if(!message.hasOwnProperty('subtype')) {
           var userId = Meteor.users.findOne({'profile.slackId': message.user})._id;
-          var time = new Date(message.ts * 1000);
 
           if (message.text.trim() === '0') {
-            console.log('DEBUGGING CHECKOUT', userId, time);
-            Meteor.call('addCheckOut', userId, time);
+            console.log('CHECKOUT#' , index,': ', userId);
+            Meteor.call('addCheckOut', userId, message.ts);
           }
         }
       });

@@ -1,21 +1,32 @@
 Template.main.helpers({
   username: function() {
-    if(Meteor.user())
-      return Meteor.user().username;
+    var user = Meteor.user();
+    if(user)
+      return user.username;
+    else
+      return 'John Doe'
   },
 
-  day: function() {
+  currentDay: function() {
     var days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
     return days[ new Date().getDay() ];
   },
 
   checkInTime: function() {
-    var time = CheckIns.findOne({}, {sort: {time: -1}, limit: 1}).time;
-    return time.getHours() + ':' + time.getMinutes();
+    var lastCheckIn = Days.lastCheckIn();
+    
+    if(lastCheckIn)
+      return lastCheckIn.getHours() + ':' + lastCheckIn.getMinutes();
+    else
+      return 'N/A';
   },
 
   checkOutTime: function() {
-    var time = CheckOuts.findOne({}, {sort: {time: -1}, limit: 1}).time;
-    return time.getHours() + ':' + time.getMinutes();
+    var lastCheckOut = Days.lastCheckOut();
+
+    if (lastCheckOut)
+      return lastCheckOut.getHours() + ':' + lastCheckOut.getMinutes();
+    else
+      return 'N/A'
   }
 })
